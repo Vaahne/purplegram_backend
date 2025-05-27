@@ -2,14 +2,12 @@ import mongoose, { mongo } from "mongoose";
 
 const friendRequestSchema = new mongoose.Schema({
     sender_id:{
-        // type: mongoose.Schema.Types.ObjectId, for _id in users
-        type: String,
+        type: mongoose.Schema.Types.ObjectId, //for _id in users
         ref: "Users",
         required: true
     },
     receiver_id:{
-        // type: mongoose.Schema.Types.ObjectId,  for _id in users
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
         required: true
     },

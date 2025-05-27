@@ -1,13 +1,9 @@
 import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema({
-    notification_id:{
-        type: String,
-        required: true
-    },
+   
     userId:{
-        // type:mongoose.Schema.Types.ObjectId,  for _id in users
-        type: String,
+        type:mongoose.Schema.Types.ObjectId, //  for _id in users
         ref: "Users",
         required: true
     },

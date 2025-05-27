@@ -1,17 +1,12 @@
 import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
-    comment_id:{
-        type: String,
-        required: true,
-        unique: true
-    },
+   
     comment_text:{
         type: String
     },
     post_id:{  // comment on which post Id
-        // type: mongoose.Schema.Types.ObjectId, for _id in posts
-        type: String,
+        type: mongoose.Schema.Types.ObjectId, //for _id in posts
         ref: "Posts",
         required: true
     },

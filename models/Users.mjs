@@ -20,29 +20,29 @@ const userSchema = new mongoose.Schema({
         required: true,
         enum : ["male","female"]
     },
-    age: {
-        type: Number,
+    dob: {
+        type: Date,
         required: true,
-        min: 8,
-        max: 99
-    },
-    userId: {
-        type: String,
-        required: true,
-        unique: true
+        validate: {
+            validator: function (value){
+                const today = new Date();
+                const age = today.getFullYear() - value.getFullYear();
+                return age >=8 ;
+            },
+            message: 'Age must be greater than 8'
+        }
     },
     photo :{
         type : String
     },
-    friends: {
-        type : [String]
-    },
+    friends: [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: 'Users'
+    }],
     timestamp:{
         type: Date,
         default: Date.now
     }
 });
-
-userSchema.index({userId: 1});
 
 export default mongoose.model('Users',userSchema);
