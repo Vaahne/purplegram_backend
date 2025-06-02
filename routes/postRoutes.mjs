@@ -13,4 +13,6 @@ router.route('/postId').get(postController.getPost)
 
 router.get('/getposts',auth,postController.getFriendsPosts);
 
+router.put('/:post_id',auth,postController.addLikes);
+
 export default router;

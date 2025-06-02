@@ -24,3 +24,4 @@ collections :
  | get all posts by user friends    |   /api/posts/getposts  |  get
  | change password  | /api/users/changePassword |   post
  | search users | /api/users/search |   get
+ | add likes to post | /api/posts/:postId | put

@@ -101,7 +101,12 @@ async function getFriendsPosts(req,res){
         if(!user || user.friends.length == 0 ) return res.status(400).json({errors:[{msg:'No friends yet'}]});
 
         // gets all posts of user.friends array
-        const posts = await Posts.find({userId:{$in: user.friends}});
+        const posts = await Posts.find({userId:{$in: user.friends}})
+                    .populate({
+                        path:'userId',
+                        select:'name photo'
+                    });
+
         if(!posts || posts.length == 0) return res.status(200).json({errors:[{msg:'No posts from your friends'}]});
 
         res.status(200).json(posts);
@@ -111,8 +116,41 @@ async function getFriendsPosts(req,res){
     }
 
 }
-async function getAllFriendsByUser(req,res){
-    
+
+async function addLikes(req,res){
+    try {
+        const userId = req.user.id;
+        
+        const user = await Users.findById({_id:userId});
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!!'}]});
+        
+        const postId = req.params.post_id;
+
+        let post = await Posts.findById({_id:postId});
+        if(!post) return res.status(404).json({errors:[{msg:'Post not found'}]});
+
+        const index = post.likes.indexOf(userId);
+        if(index == -1)
+            post.likes.push(userId);
+        else
+            post.likes.splice(index,1);
+        
+        await post.save();
+        res.status(200).json({msg:'User like updated succesful!!'});
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
 }
 
-export default {updatePost,addPost,deletePost,getPost,getFriendsPosts};
+async function addComment(req,res){
+    try {
+        
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
+}
+
+export default {updatePost,addPost,deletePost,getPost,getFriendsPosts,addLikes,addComment};
