@@ -1,8 +1,8 @@
 import Posts from "../models/Posts.mjs";
 import Users from "../models/Users.mjs";
 import FriendRequest from '../models/FriendRequest.mjs';
-import jwt from 'jsonwebtoken';
 import Comments from "../models/Comments.mjs";
+import { validationResult } from "express-validator";
 
 async function updatePost(req,res){
     try {
@@ -146,6 +146,31 @@ async function addLikes(req,res){
 
 async function addComment(req,res){
     try {
+        const errors = validationResult(req);
+        
+        if(!errors.isEmpty())
+            return res.status(400).json({errors: errors.array()});
+        
+        const userId = req.user.id;
+        const user = await Users.findById(userId);
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!!'}]});
+
+        const postId = req.params.post_id;
+        let post = await Posts.findById(postId);
+        if(!post) return res.status(404).json({errors:[{msg:'Post not found!!'}]});
+
+        const newComment = new Comments({
+            post_id: postId,
+            user_id: userId,
+            comment_text: req.body.comment
+        });
+        await newComment.save();
+
+        console.log("after comment");
+
+        post.comments.push(newComment._id);
+        await post.save();
+        res.status(200).json({msg:'Comment successful'});
         
     } catch (err) {
         console.error(err.message);

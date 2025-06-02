@@ -201,8 +201,6 @@ async function searchByUsername(req,res){
     try{
         const userId = req.user.id;
 
-        console.log('welconme',userId);
-
         const user = await Users.findOne({_id:userId});
 
         if(!user) return res.status(404).json({errors:[{msg:'User not found'}]});
