@@ -22,9 +22,10 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users'
     }],
-    comments:{ // array of comment Ids 
-        type: [String]
-    },
+    comments:[{ // array of comment Ids 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comments'
+    }],
     timestamp:{
         type: Date,
         default: Date.now

@@ -2,6 +2,6 @@ import multer from 'multer';
 
 const upload = multer({dest: `uploads/`});
 
-const imageStore = upload.single(`photo`);
+let imageStore =  upload.single('photo') || upload.single('post_photo');
 
 export default imageStore;

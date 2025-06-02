@@ -7,12 +7,12 @@ import { check } from 'express-validator';
 const router = express.Router();
 
 router.route('/').get(userCNTR.getAllUsers)
-                 .post(userCNTR.addUser);
+                 .post(imageStore,userCNTR.addUser);
 
-router.route('/:userId').put(imageStore,userCNTR.updateUser)
-                        .delete(userCNTR.deleteUser);
+router.route('/').put(auth,imageStore,userCNTR.updateUser)
+                  .delete(auth,userCNTR.deleteUser);
 // change password
-router.post('/changepwd',auth,userCNTR.changePassword);
+router.post('/changepwd',auth,[check('newPassword','Password should be atleast 6 chars').isLength({min:6})],userCNTR.changePassword);
 
 // login route
 router.post('/auth',[check('email','Please enter valid email').isEmail(),
@@ -26,5 +26,7 @@ router.post('/register',imageStore,[check('name','User Name cannot be empty').no
                           check('gender','Select a gender').not().isEmpty(),
                           check('dob','Please enter date of birth').not().isEmpty()],
                           userCNTR.addUser);
+
+router.get('/search',auth,userCNTR.searchByUsername);
 
 export default router;

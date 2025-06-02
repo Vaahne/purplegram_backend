@@ -12,14 +12,7 @@ async function changePassword(req,res){
         return res.status(400).json({errors: errors.array()});
 
     try{
-        const token = req.header('x-auth-token');
-
-        if(!token)
-            return res.status().json({errors:[{msg:'Invalid Token!!!'}]});
-
-        let decoded = jwt.verify(token,process.env.jwtSecret);
-        const userId = decoded.user.id;
-
+        const userId = req.user.id;
         const{oldPassword, newPassword } = req.body;
 
         let user = await Users.findById(userId);
@@ -35,7 +28,7 @@ async function changePassword(req,res){
         const hashedPassword = await bcrypt.hash(newPassword,salt);
 
        user.password = hashedPassword;
-       user.save();
+       await user.save();
 
        return res.status(200).json({msg:'Password updated successfully'});
 
@@ -52,17 +45,11 @@ async function updateUser(req,res){
         return res.status(400).json({errors: errors.array()});
 
     let imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
-    req.body.photo = imageDataBase64;
 
-    const {name,email,password,dob,gender,photo} = req.body;
+    const {name,email,dob,gender} = req.body;
 
     try {
-        const token = req.header('x-auth-token');
-        if(!token)
-            return res.status(400).json({errors: [{msg: 'Invalid Token!!!'}]});
-
-        const decoded = jwt.verify(token,process.env.jwtSecret);
-        const userId = decoded.user.id;
+        const userId = req.user.id;
 
         let user = await Users.findById(userId);
 
@@ -72,18 +59,17 @@ async function updateUser(req,res){
         user = new Users({
             name,
             email,
-            password,
             dob,
             gender,
-            photo
+            photo : imageDataBase64
         });
 
-       user.save();
+       await user.save();
 
         if(updatedUser)
-            return res.status(201).json({message: `Updated User details`});
+            return res.status(201).json({message: `Updated User details Successfully!!!`});
 
-        return res.status(404).json({message: `Something went wrong with user Detils`});
+        return res.status(404).json({errors: [{msg: `Something went wrong with user Detils`}]});
     }catch(err){
         console.error(err.message);
         res.status(500).json({errors:[{msg: 'Server Error'}]});
@@ -91,11 +77,12 @@ async function updateUser(req,res){
 }
 
 async function addUser(req,res){
+    
     const errors = validationResult(req);
     if(!errors.isEmpty())
         return res.status(400).json({errors: errors.array()});
 
-     let imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
+    let imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
     req.body.photo = imageDataBase64;
 
     const {name,email,password,dob,gender,photo} = req.body;
@@ -137,7 +124,7 @@ async function addUser(req,res){
                     if(err) throw err
                     return res.json({token});
                 });
-        console.log('jwt signed');
+            console.log('jwt signed');
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({errors:[{msg: 'Server error'}]});
@@ -145,17 +132,24 @@ async function addUser(req,res){
 }
 
 async function deleteUser(req,res) {
-    const userId= req.params.userId;
-    const deletedUser = await Users.findOneAndDelete({userId});
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty())
+        return res.status(400).json({errors: errors.array()});
+
+    const userId = req.user.id;
+
+    // const userId= req.params.userId;
+    const deletedUser = await Users.findOneAndDelete({_id: userId});
     // TODO : all the friend connections should also be deleted
     //  All the notifications,comments,posts,likes if any should also be deleted
     if(deletedUser)
         return res.status(200).json({message:`User deleted successfully`});
-    return res.status(404).json({message:`User can't be deleted now`});
+    return res.status(404).json({errors: [{msg:`User can't be deleted now`}]});
 }
 
 async function getAllUsers(req,res){
-    const data = await Users.find();
+    const data = await Users.find().select('-photo');
     return res.status(200).json(data);
 }
 
@@ -204,10 +198,26 @@ async function login(req,res) {
 }
 
 async function searchByUsername(req,res){
-    const userName = req.params.username;
-    const user = await Users.find({
+    try{
+        const userId = req.user.id;
+
+        console.log('welconme',userId);
+
+        const user = await Users.findOne({_id:userId});
+
+        if(!user) return res.status(404).json({errors:[{msg:'User not found'}]});
+
+        const userName = req.body.username;
+        const users = await Users.find({
                 name : {$regex : userName,$options: 'i'}
-            }).select('-password');
+            }).select('name').limit(10);
+        
+        res.status(200).json(users);    
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
+    
 }
 
 export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword};

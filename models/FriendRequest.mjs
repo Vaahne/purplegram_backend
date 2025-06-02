@@ -11,10 +11,17 @@ const friendRequestSchema = new mongoose.Schema({
         ref: "Users",
         required: true
     },
-    status:{
+    notification_type:{
         type: String,
         required: true,
         enum: [`Accepted`,`Rejected`,`Pending`]
+    },
+    message:{
+        type: String,
+    },
+    read:{
+        type: Boolean,
+        default: false
     },
     timestamp:{
         type: Date,

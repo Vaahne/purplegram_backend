@@ -16,6 +16,15 @@ const notificationSchema = new mongoose.Schema({
         type: Boolean,
         default : false
     },
+     post_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Posts",
+        required: false
+    },
+    comment_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comments"
+    },
     timestamp:{
         type: Date,
         default : Date.now

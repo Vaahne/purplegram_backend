@@ -1,14 +1,20 @@
 import Notifications from "../models/Notifications.mjs";
 
 async function updateNotification(req,res){
-    
-    let updatedNotification = await Notifications.findByIdAndUpdate(req.params.notificationId, req.body);
-    if(updatedNotification)
-        return res.status(201).json({message: `Updated Notification details`});
-    return res.status(404).json({message: `Something went wrong with Notification Detils`});
+    try {
+        const userId = req.user.id;
+
+        let updatedNotification = await Notifications.updateMany({userId:userId},{$set:{read:true}});
+        if(updatedNotification.modifiedCount > 0 )
+            return res.status(201).json({message: `Updated Notification details`});
+        res.status(404).json({errors:[{msg: `Something went wrong with Notification Detils`}]});   
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
 }
 async function addNotification(req,res){
-  
+    
     let newNotification = await Notifications.insertOne(req.body);
     if(newNotification)
         return res.status(201).json({message: `Successfully registered`});
@@ -16,19 +22,25 @@ async function addNotification(req,res){
 }
 
 async function deleteNotification(req,res) {
-    const notificationId= req.params.notificationId;
-    const deletedNotification = await Notifications.findOneAndDelete(notificationId);
+    const userId = req.user.id;
+    const deletedNotification = await Notifications.deleteMany({userId:userId});
     // TODO : all the friend connections should also be deleted
     //  All the notifications,comments,posts,likes if any should also be deleted
     if(deleteNotification)
         return res.status(200).json({message:`Notification deleted successfully`});
     return res.status(404).json({message:`Notification can't be deleted now`});
 }
+
 async function getNotification(req,res) {
-    const notificationId = req.params.notificationId;
-    const notification = await Notifications.findOne({notificationId});
-    if(notification)
-        res.status(200).json(notification);
+    
+    const userId = req.user.id;
+
+    const notifications = await Notifications.find({userId: userId,read:false}).sort({timestamp:-1});
+
+    if(!notifications)
+        return res.status(404).json({errors:[{msg:'No Notifications yet'}]});
+    
+    res.status(200).json(notifications);
 }
 
 export default {updateNotification,addNotification,deleteNotification,getNotification};
