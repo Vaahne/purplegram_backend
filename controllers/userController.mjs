@@ -4,7 +4,6 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 
-
 async function changePassword(req,res){
     const errors = validationResult(req);
     
@@ -102,19 +101,18 @@ async function addUser(req,res){
             photo
         })
 
-        console.log("Before salt");
 
         const  salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password,salt);
 
         await user.save();
-        console.log("After saving to db");
+
         const payload = {
             user : {
                 id: user._id
             }
         }
-        console.log('after payload');
+
         jwt.sign(payload,
                 process.env.jwtSecret,
                 {
@@ -124,7 +122,6 @@ async function addUser(req,res){
                     if(err) throw err
                     return res.json({token});
                 });
-            console.log('jwt signed');
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({errors:[{msg: 'Server error'}]});
@@ -217,5 +214,33 @@ async function searchByUsername(req,res){
     }
     
 }
+//  developer purpose only to sync the friends
+async function syncMutualFriends(req, res) {
+    try {
+        const users = await Users.find({});
 
-export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword};
+        for (let user of users) {
+            for (let friendId of user.friends) {
+                // Get the friend user
+                const friend = await Users.findById(friendId);
+
+                if (!friend) continue;
+
+                // If this user is not in the friend's friends list, add it
+                if (!friend.friends.includes(user._id)) {
+                    friend.friends.push(user._id);
+                    await friend.save();
+                }
+            }
+        }
+
+        res.status(200).json({ msg: "Friendships synchronized successfully." });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ errors: [{ msg: "Server Error!!!" }] });
+    }
+}
+
+
+export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword,syncMutualFriends};

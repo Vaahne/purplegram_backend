@@ -29,4 +29,6 @@ const friendRequestSchema = new mongoose.Schema({
     }
 });
 
+friendRequestSchema.index({timestamp:-1});
+
 export default mongoose.model("FriendRequest",friendRequestSchema);

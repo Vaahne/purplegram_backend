@@ -1,8 +1,11 @@
 import Posts from "../models/Posts.mjs";
 import Users from "../models/Users.mjs";
+import fs from 'fs';
 import FriendRequest from '../models/FriendRequest.mjs';
 import Comments from "../models/Comments.mjs";
 import { validationResult } from "express-validator";
+import Notifications from "../models/Notifications.mjs";
+import { timeStamp } from "console";
 
 async function updatePost(req,res){
     try {
@@ -38,15 +41,20 @@ async function updatePost(req,res){
 }
 async function addPost(req,res){
     try {
+        const errors = validationResult(req);
+        
+        if(!errors.isEmpty())
+            return res.status(400).json({errors: errors.array()});
 
-       const userId = req.user.id;
-        console.log(`\n ${userId} : userId\n`);
+        const userId = req.user.id;
+        console.log(req.body.post_text,' : photo');
+        const user = await Users.findById(userId);
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!!!'}]});
+
         let imageDataBase64 = '';
         if(req.body.postType == 'photo')
             imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
 
-        console.log(imageDataBase64);
-        
         const {postType,post_text} = req.body;
 
         let post = new Posts({
@@ -55,8 +63,22 @@ async function addPost(req,res){
             post_text,
             post_photo : imageDataBase64
         })
-        
+        console.log('Before post save!!!\n');
         await post.save();
+        console.log('After post save!!! ]\n\n');
+
+        const user_friend_ids = user.friends;
+
+        const notifications = user_friend_ids.map(friend_id =>({
+                userId : friend_id,
+                notification_type: 'post',
+                post_id: post._id,
+                fromUserId : userId
+            })
+        ); 
+
+        await Notifications.insertMany(notifications);
+        // const notify = await Notifications.
 
         return res.status(201).json({message: `Post created Successfully `});
     
@@ -100,12 +122,13 @@ async function getFriendsPosts(req,res){
         const user = await Users.findById(userId).select('friends');
         if(!user || user.friends.length == 0 ) return res.status(400).json({errors:[{msg:'No friends yet'}]});
 
+        console.log(`\n user name : ${user.friends}\n`);
         // gets all posts of user.friends array
         const posts = await Posts.find({userId:{$in: user.friends}})
                     .populate({
                         path:'userId',
                         select:'name photo'
-                    });
+                    }).sort({timeStamp : -1});
 
         if(!posts || posts.length == 0) return res.status(200).json({errors:[{msg:'No posts from your friends'}]});
 
@@ -136,6 +159,7 @@ async function addLikes(req,res){
             post.likes.splice(index,1);
         
         await post.save();
+
         res.status(200).json({msg:'User like updated succesful!!'});
 
     } catch (err) {

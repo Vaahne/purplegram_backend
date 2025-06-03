@@ -29,4 +29,7 @@ router.post('/register',imageStore,[check('name','User Name cannot be empty').no
 
 router.get('/search',auth,userCNTR.searchByUsername);
 
+// developer purpose to sync the frinds of users
+router.get('/sync',userCNTR.syncMutualFriends);
+
 export default router;

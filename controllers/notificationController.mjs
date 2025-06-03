@@ -1,4 +1,5 @@
 import Notifications from "../models/Notifications.mjs";
+import Users from "../models/Users.mjs";
 
 async function updateNotification(req,res){
     try {
@@ -32,15 +33,29 @@ async function deleteNotification(req,res) {
 }
 
 async function getNotification(req,res) {
-    
-    const userId = req.user.id;
+    try {
+        console.log(`\nThis is from get notifications\n`);
+        console.log(req.user);
+        const userId = req.user.id;
 
-    const notifications = await Notifications.find({userId: userId,read:false}).sort({timestamp:-1});
+        const user = await Users.findById(userId);
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!!'}]});
 
-    if(!notifications)
-        return res.status(404).json({errors:[{msg:'No Notifications yet'}]});
-    
-    res.status(200).json(notifications);
+        const notifications = await Notifications.find({userId: userId,read:false})
+                            .populate({
+                                path: 'fromUserId',
+                                select :'name photo'
+                            }
+                            ).sort({timestamp:-1});
+
+        if(!notifications || notifications.length === 0)
+            return res.status(404).json({errors:[{msg:'No Notifications yet'}]});
+        
+        res.status(200).json(notifications);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error!!!'}]});
+    }
 }
 
 export default {updateNotification,addNotification,deleteNotification,getNotification};

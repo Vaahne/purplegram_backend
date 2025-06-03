@@ -44,5 +44,5 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     }
 });
-
+userSchema.index({ timestamp : -1});
 export default mongoose.model('Users',userSchema);

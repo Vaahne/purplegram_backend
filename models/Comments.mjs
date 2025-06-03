@@ -21,6 +21,6 @@ const commentSchema = new mongoose.Schema({
     }
 });
 
-commentSchema.index({post_id: 1});
+commentSchema.index({post_id: 1,timestamp:-1});
 
 export default mongoose.model(`Comments`,commentSchema);

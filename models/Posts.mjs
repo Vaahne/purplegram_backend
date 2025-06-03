@@ -39,4 +39,6 @@ postSchema.virtual('likeCount').get(function (){
 postSchema.set('toJSON',{virtuals:true});
 postSchema.set('toObject',{virtuals:true});
 
+postSchema.index({userId:1,timestamp:-1});
+
 export default mongoose.model('Posts',postSchema);

@@ -7,10 +7,15 @@ const notificationSchema = new mongoose.Schema({
         ref: "Users",
         required: true
     },
+    fromUserId:{
+        type:mongoose.Schema.Types.ObjectId, //  for _id in users
+        ref: "Users",
+        required: true
+    },
     notification_type:{
         type: String,
         required: true,
-        enum:[`comment`,`like`,`friendReq`]
+        enum:[`comment`,`like`,`friendReq`,'post']
     },
     read:{
         type: Boolean,
@@ -19,7 +24,6 @@ const notificationSchema = new mongoose.Schema({
      post_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Posts",
-        required: false
     },
     comment_id:{
         type: mongoose.Schema.Types.ObjectId,
