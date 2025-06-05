@@ -12,7 +12,7 @@ router.route('/').get(userCNTR.getAllUsers)
 router.route('/').put(auth,imageStore,userCNTR.updateUser)
                   .delete(auth,userCNTR.deleteUser);
 // change password
-router.post('/changepwd',auth,[check('newPassword','Password should be atleast 6 chars').isLength({min:6})],userCNTR.changePassword);
+router.put('/changepwd',auth,[check('newPassword','Password should be atleast 6 chars').isLength({min:6})],userCNTR.changePassword);
 
 // login route
 router.post('/auth',[check('email','Please enter valid email').isEmail(),
@@ -27,7 +27,7 @@ router.post('/register',imageStore,[check('name','User Name cannot be empty').no
                           check('dob','Please enter date of birth').not().isEmpty()],
                           userCNTR.addUser);
 
-router.get('/search',auth,userCNTR.searchByUsername);
+router.post('/search',auth,userCNTR.searchByUsername);
 
 // developer purpose to sync the frinds of users
 router.get('/sync',userCNTR.syncMutualFriends);

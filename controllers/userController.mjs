@@ -202,7 +202,7 @@ async function searchByUsername(req,res){
 
         if(!user) return res.status(404).json({errors:[{msg:'User not found'}]});
 
-        const userName = req.body.username;
+        const userName = req.body.search;
         const users = await Users.find({
                 name : {$regex : userName,$options: 'i'}
             }).select('name').limit(10);

@@ -99,6 +99,27 @@ async function deleteFriendReq(req,res) {
     return res.status(404).json({message:`FriendReq can't be deleted now`});
 }
 async function getFriendReq(req,res) {
+    try {
+        const userId = req.user.id;
+        
+        const user = await Users.findById(userId);
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!!'}]});
+        
+        const friendReqs = await FriendReqs.find({receiver_id: userId, read: false,status: 'pending'})
+                                            .populate({
+                                                path: 'sender_id',
+                                                select: 'name'
+                                            }).select('sender_id');
+
+        if(!friendReqs || friendReqs.length == 0) 
+            return res.status(404).json({errors:[{msg:'No friend requests'}]});
+
+        return res.status(200).json(friendReqs);
+    
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
     const friendReqId = req.params.friendReqId;
     const friendReq = await FriendReqs.findOne({friendReqId});
     if(friendReq)

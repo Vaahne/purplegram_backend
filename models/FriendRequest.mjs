@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const friendRequestSchema = new mongoose.Schema({
     sender_id:{

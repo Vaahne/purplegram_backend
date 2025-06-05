@@ -34,8 +34,6 @@ async function deleteNotification(req,res) {
 
 async function getNotification(req,res) {
     try {
-        console.log(`\nThis is from get notifications\n`);
-        console.log(req.user);
         const userId = req.user.id;
 
         const user = await Users.findById(userId);
@@ -44,9 +42,9 @@ async function getNotification(req,res) {
         const notifications = await Notifications.find({userId: userId,read:false})
                             .populate({
                                 path: 'fromUserId',
-                                select :'name photo'
-                            }
-                            ).sort({timestamp:-1});
+                                select: 'name'
+                                // select :'name photo'
+                            }).sort({timestamp:-1});
 
         if(!notifications || notifications.length === 0)
             return res.status(404).json({errors:[{msg:'No Notifications yet'}]});
