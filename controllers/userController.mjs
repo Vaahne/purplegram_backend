@@ -1,5 +1,4 @@
 import Users from "../models/Users.mjs";
-import fs from 'fs';
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
@@ -43,9 +42,7 @@ async function updateUser(req,res){
     if(!errors.isEmpty())
         return res.status(400).json({errors: errors.array()});
 
-    let imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
-
-    const {name,email,dob,gender} = req.body;
+    const {name,email,dob,gender,photo} = req.body;
 
     try {
         const userId = req.user.id;
@@ -60,7 +57,7 @@ async function updateUser(req,res){
             email,
             dob,
             gender,
-            photo : imageDataBase64
+            photo 
         });
 
        await user.save();
@@ -80,9 +77,6 @@ async function addUser(req,res){
     const errors = validationResult(req);
     if(!errors.isEmpty())
         return res.status(400).json({errors: errors.array()});
-
-    let imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
-    req.body.photo = imageDataBase64;
 
     const {name,email,password,dob,gender,photo} = req.body;
 
