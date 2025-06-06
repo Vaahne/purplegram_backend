@@ -1,11 +1,9 @@
 import Posts from "../models/Posts.mjs";
 import Users from "../models/Users.mjs";
-import fs from 'fs';
 import FriendRequest from '../models/FriendRequest.mjs';
 import Comments from "../models/Comments.mjs";
 import { validationResult } from "express-validator";
 import Notifications from "../models/Notifications.mjs";
-import { timeStamp } from "console";
 
 async function updatePost(req,res){
     try {
@@ -24,7 +22,7 @@ async function updatePost(req,res){
                           post_text: req.body.post_text};
 
         if(req.body.postType == 'photo' ){
-            updates.post_photo  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
+            updates.post_photo  = req.body.photo;
             updates.post_text = '';
         }else if(req.body.postType == 'text') {
             updates.post_photo ='';
@@ -47,25 +45,24 @@ async function addPost(req,res){
             return res.status(400).json({errors: errors.array()});
 
         const userId = req.user.id;
-        console.log(req.body.post_text,' : photo');
+
         const user = await Users.findById(userId);
         if(!user) return res.status(404).json({errors:[{msg:'User not found!!!'}]});
 
-        let imageDataBase64 = '';
-        if(req.body.postType == 'photo')
-            imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
+        // let imageDataBase64 = '';
+        // if(req.body.postType == 'photo')
+        //     imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
 
-        const {postType,post_text} = req.body;
+        const {postType,post_text,post_photo} = req.body;
 
         let post = new Posts({
             userId,
             postType,
             post_text,
-            post_photo : imageDataBase64
+            post_photo 
         })
-        console.log('Before post save!!!\n');
+
         await post.save();
-        console.log('After post save!!! ]\n\n');
 
         const user_friend_ids = user.friends;
 
