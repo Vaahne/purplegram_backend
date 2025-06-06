@@ -45,16 +45,13 @@ async function updateFriendReq(req,res){
 
 async function addFriendReq(req,res){
     try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty())
-            return res.status(400).json({errors: errors.array()});
-
         const userId = req.user.id;
         let user = await Users.findById({_id:userId});
         if(!user) return res.status(404).json({errors:[{msg:'User not found'}]});
 
         const receiverId = req.params.receiverId;
         user = await Users.findById({_id:receiverId});
+
         if(!user) return res.status(404).json({errors:[{msg:'Receiver User not found'}]});
 
         const friend_req = new FriendReqs({

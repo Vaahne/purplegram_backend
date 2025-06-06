@@ -32,4 +32,8 @@ router.post('/search',auth,userCNTR.searchByUsername);
 // developer purpose to sync the frinds of users
 router.get('/sync',userCNTR.syncMutualFriends);
 
+router.get('/singleuser',auth,userCNTR.getUser);
+router.get('/:userId',auth,userCNTR.getUser);
+
+
 export default router;

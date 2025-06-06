@@ -13,7 +13,7 @@ const friendRequestSchema = new mongoose.Schema({
     },
     notification_type:{
         type: String,
-        required: true,
+        default : 'Pending',
         enum: [`Accepted`,`Rejected`,`Pending`]
     },
     message:{

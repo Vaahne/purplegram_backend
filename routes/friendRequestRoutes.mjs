@@ -4,7 +4,7 @@ import auth from '../middleware/auth.mjs';
 
 const router = express.Router();
 
-router.route('/').post(friendRequestController.addFriendReq);
+router.route('/:receiverId').post(auth,friendRequestController.addFriendReq);
 
 router.route('/').get(auth,friendRequestController.getFriendReq)
                  .delete(friendRequestController.deleteFriendReq)

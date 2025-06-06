@@ -150,6 +150,23 @@ async function getAllUsers(req,res){
     return res.status(200).json(data);
 }
 
+async function getUser(req,res){
+    try {
+        const userId = req.params.userId || req.user.id;
+
+        let user = await Users.findById(userId).select('-password');
+
+        if(!user)
+            return res.status(404).json({errors:[{msg: 'User doesnot exist'}]});
+
+        return res.status(200).json(user);
+    }catch(err){
+        console.error(err.message);
+        res.status(500).json({errors:[{msg: 'Server Error'}]});
+    }    
+}
+
+
 async function login(req,res) {
 
     const errors = validationResult(req);
@@ -243,4 +260,4 @@ async function syncMutualFriends(req, res) {
 }
 
 
-export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword,syncMutualFriends};
+export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword,syncMutualFriends,getUser};
