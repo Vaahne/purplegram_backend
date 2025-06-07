@@ -42,8 +42,7 @@ async function getNotification(req,res) {
         const notifications = await Notifications.find({userId: userId,read:false})
                             .populate({
                                 path: 'fromUserId',
-                                select: 'name'
-                                // select :'name photo'
+                                select :'name photo'
                             }).sort({timestamp:-1});
 
         if(!notifications || notifications.length === 0)

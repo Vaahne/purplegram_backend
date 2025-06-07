@@ -21,7 +21,7 @@ router.post('/auth',[check('email','Please enter valid email').isEmail(),
 // register a user route
 router.post('/register',[check('name','User Name cannot be empty').not().isEmpty(),
                           check('email','Please enter valid email').isEmail(),
-                          check('password','Password should be atleast 6 chars').isLength({min:6}),
+                          check('password','Password should be atleast 6 chars').isLength({min:8}),
                           check('gender','Select a gender').not().isEmpty(),
                           check('dob','Please enter date of birth').not().isEmpty()],
                           userCNTR.addUser);

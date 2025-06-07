@@ -40,7 +40,7 @@ async function updatePost(req,res){
 async function addPost(req,res){
     try {
         const errors = validationResult(req);
-        
+        console.log('  body ',req.body.postType) ;
         if(!errors.isEmpty())
             return res.status(400).json({errors: errors.array()});
 

@@ -2,6 +2,7 @@ import Users from "../models/Users.mjs";
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import FriendRequest from "../models/FriendRequest.mjs";
 
 async function changePassword(req,res){
     const errors = validationResult(req);
@@ -62,10 +63,8 @@ async function updateUser(req,res){
 
        await user.save();
 
-        if(updatedUser)
-            return res.status(201).json({message: `Updated User details Successfully!!!`});
+      return res.status(200).json({message: `Updated User details Successfully!!!`});
 
-        return res.status(404).json({errors: [{msg: `Something went wrong with user Detils`}]});
     }catch(err){
         console.error(err.message);
         res.status(500).json({errors:[{msg: 'Server Error'}]});
@@ -73,7 +72,7 @@ async function updateUser(req,res){
 }
 
 async function addUser(req,res){
-    
+    console.log(req.body);
     const errors = validationResult(req);
     if(!errors.isEmpty())
         return res.status(400).json({errors: errors.array()});
@@ -146,6 +145,7 @@ async function getAllUsers(req,res){
 
 async function getUser(req,res){
     try {
+        const loggedUser = req.user.id;
         const userId = req.params.userId || req.user.id;
 
         let user = await Users.findById(userId).select('-password');
@@ -153,13 +153,18 @@ async function getUser(req,res){
         if(!user)
             return res.status(404).json({errors:[{msg: 'User doesnot exist'}]});
 
-        return res.status(200).json(user);
+        if(userId == loggedUser)
+            return res.status(200).json(user);
+        
+        const loggedInUser = await Users.findById(loggedUser).select('-password');
+        const isFriend = loggedInUser.friends.includes(userId);
+
+        return res.status(200).json({...user._doc,isFriend});
     }catch(err){
         console.error(err.message);
         res.status(500).json({errors:[{msg: 'Server Error'}]});
     }    
 }
-
 
 async function login(req,res) {
 
@@ -222,8 +227,7 @@ async function searchByUsername(req,res){
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error'}]});
-    }
-    
+    }    
 }
 //  developer purpose only to sync the friends
 async function syncMutualFriends(req, res) {

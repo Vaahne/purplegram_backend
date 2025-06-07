@@ -7,7 +7,10 @@ const router = express.Router();
 router.route('/:receiverId').post(auth,friendRequestController.addFriendReq);
 
 router.route('/').get(auth,friendRequestController.getFriendReq)
-                 .delete(friendRequestController.deleteFriendReq)
-                 .put(friendRequestController.updateFriendReq);
+                 .delete(friendRequestController.deleteFriendReq);
+
+router.put('/:sender_id',auth,friendRequestController.updateFriendReq);                 
+
+router.route('/update').put(friendRequestController.updateFeild);
 
 export default router;
