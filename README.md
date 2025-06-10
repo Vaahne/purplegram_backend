@@ -25,3 +25,5 @@ collections :
  | change password  | /api/users/changePassword |   post
  | search users | /api/users/search |   get
  | add likes to post | /api/posts/:postId | put
+ | get all the comments of a post | /api/comments/:postId | get
+ | add a comment to a post | /api/comments/:postId | post 

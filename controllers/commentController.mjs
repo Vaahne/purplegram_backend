@@ -1,5 +1,8 @@
 import Comments from "../models/Comments.mjs";
+import Notifications from "../models/Notifications.mjs";
 import Posts from "../models/Posts.mjs";
+import Users from "../models/Users.mjs";
+import { validationResult } from "express-validator";
 
 async function updateComment(req,res){
     try {
@@ -48,9 +51,25 @@ async function addComment(req,res){
             post_id: postId,
             user_id: userId,
             comment_text: req.body.comment
-        })
+        });
+        await comment.save();
 
-        comment.save();
+        // post.comments.push(comment._id);
+        await Posts.findByIdAndUpdate(postId, { $push: { comments: comment._id } });
+        // await post.save();
+
+        const notification = new Notifications({
+            userId: post.userId,
+            fromUserId : userId,
+            notification_type :'comment',
+            post_id : post._id
+        });
+
+        await notification.save();
+
+//         notification.save()
+//   .then(doc => console.log('Saved notification:', doc))
+//   .catch(err => console.error('Error saving notification:', err));
 
         res.status(201).json({msg:'Comment Successful!!'});
 
@@ -91,17 +110,38 @@ async function deleteComment(req,res) {
 
 async function getComment(req,res) {
     try {
-        const errors = validationResult(req);
-            
-        if(!errors.isEmpty())
-            return res.status(400).json({errors: errors.array()});
+        const userId = req.user.id;
+        const user = await Users.findById(userId);
+
+        if(!user) return res.status(404).json({errors:[{msg:'User does not exist!!!'}]});
+
+        const post_id = req.params.postId;
+
+        const post = await Posts.findById(post_id).select('comments');
+
+        if(!post) return res.status(404).json({errors:[{msg:'Post not found!!'}]});
+
+        if(!post.comments || post.comments.length == 0)
+            return res.status(200).json({comments:[]});
+
+    //    const populatedPost = await post.populate({
+    //                             path: 'comments',
+    //                             select: 'comment_text user_id',
+    //                             // populate: { path: 'user_id', select: 'name photo' }
+    //                         });
+
+     const populatedPost = await Posts.findById(post_id)
+                            .populate({
+                                path: 'comments',
+                                select: 'comment_text user_id',
+                                populate: { path: 'user_id', select: 'name photo' }
+                            });
+    
+        // console.log('\n get comment after comment wihte post: \n ',populatedPost);
         
-        const comment_id = req.params.comment_id;
-        const comment = await Comments.findById({_id:comment_id});
+        // if(!commentsWithPost)    return res.status(404).json({errors:[{msg:'Post not found!!!'}]});
         
-        if(!comment)    return res.status(404).json({errors:[{msg:'Comment Not found!!!'}]});
-        
-        res.status(200).json(comment);
+        res.status(200).json(populatedPost);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error!!'}]});

@@ -43,10 +43,10 @@ async function getNotification(req,res) {
                             .populate({
                                 path: 'fromUserId',
                                 select :'name photo'
-                            }).sort({timestamp:-1});
+                            }).sort({timestamp:-1}).limit(10);
 
         if(!notifications || notifications.length === 0)
-            return res.status(404).json({errors:[{msg:'No Notifications yet'}]});
+            return res.status(200).json({msg:'You all caught up'});
         
         res.status(200).json(notifications);
     } catch (err) {

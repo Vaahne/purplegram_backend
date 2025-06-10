@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 import FriendRequest from "../models/FriendRequest.mjs";
+import Posts from "../models/Posts.mjs";
 
 async function changePassword(req,res){
     const errors = validationResult(req);
@@ -38,12 +39,8 @@ async function changePassword(req,res){
 }
 
 async function updateUser(req,res){
-    const errors = validationResult(req);
-    
-    if(!errors.isEmpty())
-        return res.status(400).json({errors: errors.array()});
 
-    const {name,email,dob,gender,photo} = req.body;
+    const {name,email,dob,photo} = req.body;
 
     try {
         const userId = req.user.id;
@@ -53,15 +50,12 @@ async function updateUser(req,res){
         if(!user)
             return res.status(404).json({errors:[{msg: 'User doesnot exist'}]});
 
-        user = new Users({
-            name,
-            email,
-            dob,
-            gender,
-            photo 
-        });
-
-       await user.save();
+        user.email = email;
+        user.dob = dob;
+        user.photo = photo;
+        user.name = name;
+    
+        await user.save();
 
       return res.status(200).json({message: `Updated User details Successfully!!!`});
 
@@ -92,8 +86,7 @@ async function addUser(req,res){
             dob,
             gender,
             photo
-        })
-
+        });
 
         const  salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password,salt);
@@ -153,13 +146,15 @@ async function getUser(req,res){
         if(!user)
             return res.status(404).json({errors:[{msg: 'User doesnot exist'}]});
 
+        let posts = await Posts.find({userId}).sort({timestamp : -1});
+
         if(userId == loggedUser)
-            return res.status(200).json(user);
+            return res.status(200).json({...user._doc,posts,isFriend:true});
         
         const loggedInUser = await Users.findById(loggedUser).select('-password');
         const isFriend = loggedInUser.friends.includes(userId);
 
-        return res.status(200).json({...user._doc,isFriend});
+        return res.status(200).json({...user._doc,isFriend,posts});
     }catch(err){
         console.error(err.message);
         res.status(500).json({errors:[{msg: 'Server Error'}]});
@@ -239,8 +234,9 @@ async function syncMutualFriends(req, res) {
                 // Get the friend user
                 const friend = await Users.findById(friendId);
 
-                if (!friend) continue;
+                if (!friend ) continue;
 
+                // if(friend.friends)
                 // If this user is not in the friend's friends list, add it
                 if (!friend.friends.includes(user._id)) {
                     friend.friends.push(user._id);

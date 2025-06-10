@@ -53,18 +53,20 @@ async function addPost(req,res){
         // if(req.body.postType == 'photo')
         //     imageDataBase64  = (req.file) ? fs.readFileSync(req.file.path).toString("base64") : `defaultPhoto`; 
 
-        const {postType,post_text,post_photo} = req.body;
+        const {postType,post_text,photo} = req.body;
 
         let post = new Posts({
             userId,
             postType,
             post_text,
-            post_photo 
+            post_photo: photo 
         })
 
         await post.save();
 
         const user_friend_ids = user.friends;
+
+
 
         const notifications = user_friend_ids.map(friend_id =>({
                 userId : friend_id,
@@ -74,7 +76,10 @@ async function addPost(req,res){
             })
         ); 
 
-        await Notifications.insertMany(notifications);
+        console.log(notifications,'\n');
+
+        if (notifications.length > 0)
+            await Notifications.insertMany(notifications);
         // const notify = await Notifications.
 
         return res.status(201).json({message: `Post created Successfully `});
@@ -121,11 +126,11 @@ async function getFriendsPosts(req,res){
 
         console.log(`\n user name : ${user.friends}\n`);
         // gets all posts of user.friends array
-        const posts = await Posts.find({userId:{$in: user.friends}})
+        const posts = await Posts.find({userId:{$in: [...user.friends,userId] }})
                     .populate({
                         path:'userId',
                         select:'name photo'
-                    }).sort({timeStamp : -1});
+                    }).sort({timestamp : -1});
 
         if(!posts || posts.length == 0) return res.status(200).json({errors:[{msg:'No posts from your friends'}]});
 

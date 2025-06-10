@@ -125,7 +125,7 @@ async function getFriendReq(req,res) {
                                             }).select('sender_id');
 
         if(!friendReqs || friendReqs.length == 0) 
-            return res.status(404).json({errors:[{msg:'No friend requests'}]});
+            return res.status(200).json({msg:'No friend requests'});
 
         return res.status(200).json(friendReqs);
     
