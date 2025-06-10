@@ -82,7 +82,7 @@ async function addPost(req,res){
             await Notifications.insertMany(notifications);
         // const notify = await Notifications.
 
-        return res.status(201).json({message: `Post created Successfully `});
+        return res.status(201).json({...post.toObject(),userId:{name:user.name,photo:user.photo}});
     
     } catch (err) {
         console.error(err.message);
@@ -122,7 +122,7 @@ async function getFriendsPosts(req,res){
 
         // gets the friends of given userId
         const user = await Users.findById(userId).select('friends');
-        if(!user || user.friends.length == 0 ) return res.status(400).json({errors:[{msg:'No friends yet'}]});
+        if(!user || user.friends.length == 0 ) return res.status(200).json({msg:'No friends yet'});
 
         console.log(`\n user name : ${user.friends}\n`);
         // gets all posts of user.friends array

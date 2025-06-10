@@ -71,7 +71,7 @@ async function addComment(req,res){
 //   .then(doc => console.log('Saved notification:', doc))
 //   .catch(err => console.error('Error saving notification:', err));
 
-        res.status(201).json({msg:'Comment Successful!!'});
+        res.status(201).json(comment);
 
     } catch (err) {
         console.error(err.message);

@@ -1,3 +1,5 @@
+import { Server } from 'socket.io';
+import {createServer} from 'http';
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './db/conn.mjs';
@@ -12,29 +14,80 @@ import cors from 'cors';
 import morgan from 'morgan';
 
 // setup
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-dotenv.config();
 app.use(morgan("tiny"));
 const PORT = process.env.PORT;
 connectDB();
 
-// routes
-app.get('/',(req,res)=>{
-    res.json({message:`Hello World`});
+app.use(cors( { 
+            origin: "http://localhost:5173",
+            methods : ['get','post'],
+            credentials: true
+     } 
+));
+
+const server = createServer(app);
+
+const io = new Server(server, { 
+    cors: { 
+            origin: "http://localhost:5173",
+            methods : ['get','post'],
+            credentials: true
+     } 
 });
-app.use('/api/users',userRouter);
-app.use('/api/posts',postRouter);
-app.use('/api/comments',commentRouter);
-app.use('/api/notification',notificationRouter);
-app.use('/api/friendreq',friendReqRouter);
-app.use('/seeding',seedingRouter);
+
+
+io.on("connection", (socket) => {
+    console.log(`User connected: ${socket.id}`);
+
+    // Handle like events
+    socket.on("likePost", ({ postId, userId,toggleLike }) => {
+        console.log('\nInside the socket on \n',postId,userId,toggleLike);
+        io.emit("updateLikes", { postId, userId , toggleLike});
+    });
+
+    // comments on a post
+    socket.on("commentPost", ({ postId, comment }) => {
+        io.emit("updateComments", { postId, comment });
+    });
+
+    // send Friend Request
+    socket.on("sendFriendRequest", ({ toUserId, request }) => {
+        console.log("Sending real-time friend request");
+        io.emit("newFriendRequest", { request }); 
+    // or emit to only a specific user if you store socketId <-> userId
+    });
+
+    // Handle comment events
+    socket.on("commentPost", ({ postId, comment }) => {
+        io.emit("updateComments", { postId, comment });
+    });
+
+    // Handle disconnects
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+    });
+});
+
+// routes
+const routes = [
+    { path: "/api/users", router: userRouter },
+    { path: "/api/posts", router: postRouter },
+    { path: "/api/comments", router: commentRouter },
+    { path: "/api/notification", router: notificationRouter },
+    { path: "/api/friendreq", router: friendReqRouter },
+    { path: "/seeding", router: seedingRouter }
+];
+
+routes.forEach(({ path, router }) => app.use(path, router));
 
 // error handling middleware
 app.use(globalError);
 
-app.listen(PORT,(req,res)=>{
+server.listen(PORT,(req,res)=>{
     console.log(`Listening to PORT: ${PORT}`);
 });
