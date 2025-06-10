@@ -7,7 +7,7 @@ const router = express.Router();
 // router.route('/').post(auth,commentController.addComment);
 
 router.route('/:commentId').delete(auth,commentController.deleteComment)
-                            .put(auth,commentController.updateComment);
+                            .put(auth,[check('comment','Comment cannot be empty').not().isEmpty()],commentController.updateComment);
 
 router.route('/:postId').get(auth ,commentController.getComment)                        
                         .post(auth,[check('comment','Comment cannot be empty').not().isEmpty()],commentController.addComment);

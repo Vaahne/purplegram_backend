@@ -10,8 +10,8 @@ async function updateComment(req,res){
             
         if(!errors.isEmpty())
             return res.status(400).json({errors: errors.array()});
-        
-        const comment_id = req.params.comment_id;
+        console.log('before comment id')
+        const comment_id = req.params.commentId;
         let comment = await Comments.findById({_id:comment_id});
         
         if(!comment)    return res.status(404).json({errors:[{msg:'Comment Not found!!!'}]});

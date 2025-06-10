@@ -1,29 +1,78 @@
 ## Purplegram
- [Front End](https://github.com/Vaahne/purplegram_frontend)
+A full-stack social media application built with the MERN stack.  
+This repository focuses on the **Backend API** for Purplegram.
+
+### 🔗 [Frontend Repository](https://github.com/Vaahne/purplegram_frontend)
 
 install mongoose, express, dotenv, cors , multer
+---
 
-collections : 
-    users
-    notifications
-    posts
-    friendrequst
-    comments
+## 🛠️ Tech Stack
+
+- **MongoDB** – NoSQL database
+- **Express.js** – Node.js web framework
+- **Mongoose** – ODM for MongoDB
+- **Multer** – Middleware for handling file uploads
+- **dotenv** – Environment variable management
+- **CORS** – Cross-Origin Resource Sharing
+
+---
+
+## 📦 Installation
+
+```bash
+npm install express mongoose dotenv cors multer
+```
+
+---
+
+## 🗃️ Collections
+
+- `users`
+- `notifications`
+- `posts`
+- `friendrequest`
+- `comments`
+
+---
     
 # Routes
- | Name   |  Route |
- | create User  |  /api/users   |   post
- | delete user  | /api/users/:id    | delete
- | update user  | /api/users/:id    | put
- | get user |   /api/user/:id   |   get
- | get all users    |   /api/users  |   get
- | create post  | /api/posts    |   post
- | delete post  | /api/posts/:id    |   delete
- | update post  | /api/posts/:id    |   post
- | get post |   /api/posts/:id  |   get
- | get all posts by user friends    |   /api/posts/getposts  |  get
- | change password  | /api/users/changePassword |   post
- | search users | /api/users/search |   get
- | add likes to post | /api/posts/:postId | put
- | get all the comments of a post | /api/comments/:postId | get
- | add a comment to a post | /api/comments/:postId | post 
+ | Feature                         | Method | Route                                  | Description                            |
+|---------------------------------|--------|----------------------------------------|----------------------------------------|
+| Create User                     | POST   | `/api/users`                           | Register a new user                    |
+| Delete User                     | DELETE | `/api/users/:id`                       | Delete a user by ID                    |
+| Update User                     | PUT    | `/api/users/:id`                       | Update user profile                    |
+| Get User                        | GET    | `/api/user/:id`                        | Fetch a single user by ID              |
+| Get All Users                   | GET    | `/api/users`                           | Fetch all users                        |
+| Change Password                 | POST   | `/api/users/changePassword`            | Change a user's password               |
+| Search Users                    | GET    | `/api/users/search`                    | Search for users                       |
+| Create Post                     | POST   | `/api/posts`                           | Create a new post                      |
+| Delete Post                     | DELETE | `/api/posts/:id`                       | Delete a post by ID                    |
+| Update Post                     | POST   | `/api/posts/:id`                       | Update a post by ID                    |
+| Get Single Post                 | GET    | `/api/posts/:id`                       | Get details of a single post           |
+| Get Friends' Posts              | GET    | `/api/posts/getposts`                  | Get posts from all user’s friends      |
+| Like/Unlike a Post              | PUT    | `/api/posts/:postId`                   | Toggle like for a post                 |
+| Get Comments on a Post          | GET    | `/api/comments/:postId`                | Get all comments for a post            |
+| Add Comment to a Post           | POST   | `/api/comments/:postId`                | Add a comment to a post                |
+| Delete a Comment                | DELETE | `/api/comments/:commentId`             | Delete a specific comment              |
+| Update a Comment                | PUT    | `/api/comments/:commentId`             | Update a specific comment              |
+
+---
+## 📁 Project Structure
+
+```
+purplegram_backend/
+├── controllers/
+├── models/
+├── routes/
+├── middleware/
+├── uploads/
+├── .env
+├── server.js
+└── package.json
+```
+
+
+## 💡 Author
+
+Created by [Vaahne](https://github.com/Vaahne)
