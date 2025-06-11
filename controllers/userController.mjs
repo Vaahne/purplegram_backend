@@ -138,6 +138,7 @@ async function getAllUsers(req,res){
 
 async function getUser(req,res){
     try {
+        console.log('\n\n');
         const loggedUser = req.user.id;
         const userId = req.params.userId || req.user.id;
 
@@ -253,5 +254,27 @@ async function syncMutualFriends(req, res) {
     }
 }
 
+async function getFriends(req,res){
+    try {
+        console.log("\n inside funciton \n");
+        const userId = req.user.id;
+        const user = await Users.findById(userId).populate({
+                        path:'friends',
+                        select:'name photo'}).select('-password');
 
-export default {updateUser,addUser,deleteUser,login,getAllUsers,searchByUsername,changePassword,syncMutualFriends,getUser};
+        console.log("\n iafter user\n");
+        
+        if(!user) return res.status(404).json({errors:[{msg:'User not found'}]});
+
+        const friends = user.friends;
+        res.status(200).json(friends);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:'Server Error'});
+    }
+}
+
+
+export default {updateUser,addUser,deleteUser,login,getAllUsers,
+                searchByUsername,changePassword,syncMutualFriends,
+                getUser,getFriends};

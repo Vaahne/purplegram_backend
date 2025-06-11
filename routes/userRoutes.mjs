@@ -32,6 +32,8 @@ router.post('/search',auth,userCNTR.searchByUsername);
 router.get('/sync',userCNTR.syncMutualFriends);
 
 router.get('/singleuser',auth,userCNTR.getUser);
+router.get('/getfriends',auth,userCNTR.getFriends);
+
 router.get('/:userId',auth,userCNTR.getUser);
 
 

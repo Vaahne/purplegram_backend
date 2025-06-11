@@ -10,6 +10,7 @@ import notificationRouter from './routes/notificationRoutes.mjs';
 import friendReqRouter from './routes/friendRequestRoutes.mjs';
 import seedingRouter from './routes/seedingRouter.mjs';
 import globalError from './middleware/ErrorMiddleware.mjs';
+import registerSocketHandlers from './sockets/index.mjs';
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -23,12 +24,12 @@ app.use(morgan("tiny"));
 const PORT = process.env.PORT;
 connectDB();
 
-app.use(cors( { 
-            origin: "http://localhost:5173",
-            methods : ['get','post'],
-            credentials: true
-     } 
-));
+// app.use(cors( { 
+//             origin: "http://localhost:5173",
+//             methods : ['get','post'],
+//             credentials: true
+//      } 
+// ));
 
 const server = createServer(app);
 
@@ -40,38 +41,39 @@ const io = new Server(server, {
      } 
 });
 
+registerSocketHandlers(io);
 
-io.on("connection", (socket) => {
-    console.log(`User connected: ${socket.id}`);
+// io.on("connection", (socket) => {
+//     console.log(`User connected: ${socket.id}`);
 
-    // Handle like events
-    socket.on("likePost", ({ postId, userId,toggleLike }) => {
-        console.log('\nInside the socket on \n',postId,userId,toggleLike);
-        io.emit("updateLikes", { postId, userId , toggleLike});
-    });
+//     // Handle like events
+//     socket.on("likePost", ({ postId, userId,toggleLike }) => {
+//         console.log('\nInside the socket on \n',postId,userId,toggleLike);
+//         io.emit("updateLikes", { postId, userId , toggleLike});
+//     });
 
-    // comments on a post
-    socket.on("commentPost", ({ postId, comment }) => {
-        io.emit("updateComments", { postId, comment });
-    });
+//     // comments on a post
+//     socket.on("commentPost", ({ postId, comment }) => {
+//         io.emit("updateComments", { postId, comment });
+//     });
 
-    // send Friend Request
-    socket.on("sendFriendRequest", ({ toUserId, request }) => {
-        console.log("Sending real-time friend request");
-        io.emit("newFriendRequest", { request }); 
-    // or emit to only a specific user if you store socketId <-> userId
-    });
+//     // send Friend Request
+//     socket.on("sendFriendRequest", ({ toUserId, request }) => {
+//         console.log("Sending real-time friend request");
+//         io.emit("newFriendRequest", { request }); 
+//     // or emit to only a specific user if you store socketId <-> userId
+//     });
 
-    // Handle comment events
-    socket.on("commentPost", ({ postId, comment }) => {
-        io.emit("updateComments", { postId, comment });
-    });
+//     // Handle comment events
+//     socket.on("commentPost", ({ postId, comment }) => {
+//         io.emit("updateComments", { postId, comment });
+//     });
 
-    // Handle disconnects
-    socket.on("disconnect", () => {
-        console.log(`User disconnected: ${socket.id}`);
-    });
-});
+//     // Handle disconnects
+//     socket.on("disconnect", () => {
+//         console.log(`User disconnected: ${socket.id}`);
+//     });
+// });
 
 // routes
 const routes = [
