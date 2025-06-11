@@ -102,7 +102,7 @@ async function addUser(req,res){
         jwt.sign(payload,
                 process.env.jwtSecret,
                 {
-                    expiresIn: 360000
+                    expiresIn: 360
                 },
                 (err,token)=>{
                     if(err) throw err
