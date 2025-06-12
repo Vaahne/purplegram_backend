@@ -12,9 +12,9 @@ install mongoose, express, dotenv, cors , multer
 - **MongoDB** – NoSQL database
 - **Express.js** – Node.js web framework
 - **Mongoose** – ODM for MongoDB
-- **Multer** – Middleware for handling file uploads
 - **dotenv** – Environment variable management
 - **CORS** – Cross-Origin Resource Sharing
+- **Socket.io** - live updates
 
 ---
 
@@ -34,6 +34,35 @@ npm install express mongoose dotenv cors multer
 - `friendrequest`
 - `comments`
 
+## Schema
+Users 
+<table>
+  <tr style="background-color:#f2f2f2">
+    <th>Feild Name</th>
+    <th>Type </th>
+    <th>Description</th>
+  </tr>
+  <tr style="background-color:#ffffff">
+    <td>_id</td>
+    <td>object uniquely </td>
+    <td>unique identifier</td>
+  </tr>
+  <tr style="background-color:#f2f2f2">
+    <td>Name</td>
+    <td>String</td>
+    <td>Name of the user</td>
+  </tr>
+  <tr style="background-color:#ffffff">
+    <td>Email</td>
+    <td>String</td>
+    <td>unique email id for each user</td>
+  </tr>
+  <tr style="background-color:#f2f2f2">
+    <td>Friends</td>
+    <td>user ids</td>
+    <td>Array of friend userids </td>
+  </tr>
+</table>
 ---
     
 # Routes
@@ -67,11 +96,11 @@ purplegram_backend/
 ├── routes/
 ├── middleware/
 ├── uploads/
+├── sockets/
 ├── .env
 ├── server.js
 └── package.json
 ```
-
 
 ## 💡 Author
 

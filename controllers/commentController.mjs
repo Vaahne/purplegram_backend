@@ -26,11 +26,6 @@ async function updateComment(req,res){
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
-    
-    let updatedComment = await Comments.findByIdAndUpdate(req.params.commentId, req.body);
-    if(updatedComment)
-        return res.status(201).json({message: `Updated Comment details`});
-    return res.status(404).json({message: `Something went wrong with Comment Detils`});
 }
 async function addComment(req,res){   
     try {

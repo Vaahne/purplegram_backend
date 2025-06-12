@@ -1,5 +1,5 @@
 export default function CommentSocket(io, socket) {
-  socket.on("commentAction", ({ action, postId, comment, commentId, updatedText }) => {
+  socket.on("commentAction", ({ action, postId, comment, commentId, updatedComment }) => {
     switch (action) {
       case "create":
         io.emit("commentCreated", { postId, comment });

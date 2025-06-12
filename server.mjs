@@ -24,13 +24,6 @@ app.use(morgan("tiny"));
 const PORT = process.env.PORT;
 connectDB();
 
-// app.use(cors( { 
-//             origin: "http://localhost:5173",
-//             methods : ['get','post'],
-//             credentials: true
-//      } 
-// ));
-
 const server = createServer(app);
 
 const io = new Server(server, { 
@@ -42,38 +35,6 @@ const io = new Server(server, {
 });
 
 registerSocketHandlers(io);
-
-// io.on("connection", (socket) => {
-//     console.log(`User connected: ${socket.id}`);
-
-//     // Handle like events
-//     socket.on("likePost", ({ postId, userId,toggleLike }) => {
-//         console.log('\nInside the socket on \n',postId,userId,toggleLike);
-//         io.emit("updateLikes", { postId, userId , toggleLike});
-//     });
-
-//     // comments on a post
-//     socket.on("commentPost", ({ postId, comment }) => {
-//         io.emit("updateComments", { postId, comment });
-//     });
-
-//     // send Friend Request
-//     socket.on("sendFriendRequest", ({ toUserId, request }) => {
-//         console.log("Sending real-time friend request");
-//         io.emit("newFriendRequest", { request }); 
-//     // or emit to only a specific user if you store socketId <-> userId
-//     });
-
-//     // Handle comment events
-//     socket.on("commentPost", ({ postId, comment }) => {
-//         io.emit("updateComments", { postId, comment });
-//     });
-
-//     // Handle disconnects
-//     socket.on("disconnect", () => {
-//         console.log(`User disconnected: ${socket.id}`);
-//     });
-// });
 
 // routes
 const routes = [
