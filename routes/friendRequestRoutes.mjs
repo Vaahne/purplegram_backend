@@ -9,8 +9,9 @@ router.route('/:receiverId').post(auth,friendRequestController.addFriendReq);
 router.route('/').get(auth,friendRequestController.getFriendReq)
                  .delete(friendRequestController.deleteFriendReq);
 
+router.route('/update').put(friendRequestController.updateFeild);
 router.put('/:sender_id',auth,friendRequestController.updateFriendReq);                 
 
-router.route('/update').put(friendRequestController.updateFeild);
+
 
 export default router;
