@@ -91,22 +91,30 @@ async function addPost(req,res){
 }
 
 async function deletePost(req,res) {
-    const postId= req.params.postId;
-    const userId = req.user.id;
+    try {
+        const userId = req.user.id;
 
-    const post = await Posts.findById({_id:postId});
-    
-    if(!post)  return res.status(404).json({errors:[{msg:'Post doesnot exist'}]});
+        const user = await Users.findById(userId);
+        if(!user) return res.status(404).json({errors:[{msg:'User not found!'}]});
 
-    if(post.userId.toString() != userId) return res.status(403).json({errors:[{msg:'Unauthorized Access!!!'}]});
+        const postId= req.params.postId;
+        const post = await Posts.findById(postId);
+        
+        if(!post)  return res.status(404).json({errors:[{msg:'Post doesnot exist'}]});
 
-    await Posts.findByIdAndDelete({_id:postId});
+        if(post.userId.toString() != userId) return res.status(403).json({errors:[{msg:'Unauthorized Access!!!'}]});
 
-    await FriendRequest.deleteMany({post_id:postId});
-    // await Comments.deleteMany(postId);
+        await Posts.findByIdAndDelete({_id:postId});
 
-    return res.status(200).json({message:`Post deleted successfully`});
-    // return res.status(404).json({message:`Post can't be deleted now`});
+        await Notifications.deleteMany({post_id:postId});
+        await Comments.deleteMany({post_id:postId});
+
+        return res.status(200).json({message:`Post deleted successfully`});
+        // return res.status(404).json({message:`Post can't be deleted now`});
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error'}]});
+    }
 }
 async function getPost(req,res) {
     const postId = req.params.postId;
@@ -118,6 +126,7 @@ async function getPost(req,res) {
 async function getFriendsPosts(req,res){
    
     try {
+        console.log("Friends posts");
         const userId = req.user.id;
 
         // gets the friends of given userId

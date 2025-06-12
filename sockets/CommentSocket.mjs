@@ -8,7 +8,7 @@ export default function CommentSocket(io, socket) {
         io.emit("commentDeleted", { postId, commentId });
         break;
       case "edit":
-        io.emit("commentEdited", { postId, commentId, updatedText });
+        io.emit("commentEdited", { postId,  updatedComment });
         break;
     }
   });

@@ -52,6 +52,7 @@ async function addFriendReq(req,res){
 
         if(!user) return res.status(404).json({errors:[{msg:'Receiver User not found'}]});
         console.log("hello before friendRequest setup\n");
+        
         const friendRequest = await FriendRequest.findOne({
             $or: [
                 {sender_id: userId, receiver_id: receiverId},

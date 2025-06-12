@@ -83,7 +83,7 @@ async function deleteComment(req,res) {
     
     try {
         const errors = validationResult(req);
-            
+        
         if(!errors.isEmpty())
             return res.status(400).json({errors: errors.array()});
           
@@ -101,6 +101,10 @@ async function deleteComment(req,res) {
             return res.status(403).json({errors:[{msg:'Unauthorised action'}]});
 
         await comment.deleteOne();
+
+        const postId = req.body.postId;
+        await Posts.findByIdAndUpdate(postId,{$pull:{comments:commentId}});
+
         res.status(200).json({msg:'Successfully comment deleted'});
     } catch (err) {
         console.error(err.message);

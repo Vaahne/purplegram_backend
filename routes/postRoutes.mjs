@@ -8,11 +8,12 @@ const router = express.Router();
 router.route('/').get((req,res)=>{res.send(`Hello from Posts Router`)})
                  .post(auth,[check('post_text','Post cannot be empty').not().isEmpty()],postController.addPost);
 
-router.route('/postId').get(postController.getPost)
-                       .delete(auth,postController.deletePost)
-                       .put(auth,postController.updatePost);
-
 router.get('/getposts',auth,postController.getFriendsPosts);
+
+router.route('/:postId').get(postController.getPost)
+                       .delete(auth,postController.deletePost);
+                    //    .put(auth,postController.updatePost);
+
 
 router.put('/:post_id',auth,postController.addLikes);
 
