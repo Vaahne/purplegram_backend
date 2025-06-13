@@ -1,8 +1,10 @@
 import FriendRequest from "../models/FriendRequest.mjs";
 import Users from "../models/Users.mjs";
 
-// updating a freend request after accepting or ignoring the friend request
+// @route: PUT /api/friendreq/update
+// @desc: updating a freend request after accepting or ignoring the friend request
 // and adding to the friends list once accepted
+// @access: private
 async function updateFriendReq(req,res){
     try {
         const userId = req.user.id;
@@ -43,7 +45,9 @@ async function updateFriendReq(req,res){
     }
 }
 
-// adding a new friend request
+// @route: POST /api/friendreq/:receiverID
+// @desc: adding a new friend request
+// @access: private
 async function addFriendReq(req,res){
     try {
         const userId = req.user.id;
@@ -85,7 +89,10 @@ async function addFriendReq(req,res){
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
-// deleting a friend request
+
+// @route: POST /api/friendreq
+// @desc:  deleting a friend request
+// @access: private
 async function deleteFriendReq(req,res) {   
     try {
         const errors = validationResult(req);
@@ -112,7 +119,9 @@ async function deleteFriendReq(req,res) {
     return res.status(404).json({message:`FriendReq can't be deleted now`});
 }
 
-// get all the friend requests of a user
+// @route: GET /api/friendreq
+// @desc:   get all the friend requests of a user
+// @access: private
 async function getFriendReq(req,res) {
     try {
         const userId = req.user.id;
@@ -140,7 +149,9 @@ async function getFriendReq(req,res) {
     if(friendReq)
         res.status(200).json(friendReq);
 }
-// This is for developer purpose : update a feild 
+
+// @route: PUT /api/friendreq/:senderId
+// @desc:  This is for developer purpose : update a feild 
 async function updateFeild(req,res){
     try {        
          const result = await FriendRequest.updateMany(

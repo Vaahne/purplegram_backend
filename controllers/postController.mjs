@@ -5,6 +5,9 @@ import Comments from "../models/Comments.mjs";
 import { validationResult } from "express-validator";
 import Notifications from "../models/Notifications.mjs";
 
+// @route: GET /api/posts
+// @desc:   updating a post
+// @access: private 
 async function updatePost(req,res){
     try {
         const userId = req.user.id; // from the auth            
@@ -37,6 +40,10 @@ async function updatePost(req,res){
         res.status(500).json({errors:[{msg:'Server Errror'}]});
     }
 }
+
+// @route: POST /api/posts
+// @desc:   adding a post and sending notifications to all the friends
+// @access: private 
 async function addPost(req,res){
     try {
         const errors = validationResult(req);
@@ -66,8 +73,6 @@ async function addPost(req,res){
 
         const user_friend_ids = user.friends;
 
-
-
         const notifications = user_friend_ids.map(friend_id =>({
                 userId : friend_id,
                 notification_type: 'post',
@@ -76,20 +81,19 @@ async function addPost(req,res){
             })
         ); 
 
-        console.log(notifications,'\n');
-
         if (notifications.length > 0)
             await Notifications.insertMany(notifications);
-        // const notify = await Notifications.
 
         return res.status(201).json({...post.toObject(),userId:{name:user.name,photo:user.photo}});
-    
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error'}]})
     }
 }
 
+// @route: DELETE /api/posts
+// @desc:   delete a post and all the notifications of that post
+// @access: private 
 async function deletePost(req,res) {
     try {
         const userId = req.user.id;
@@ -110,30 +114,38 @@ async function deletePost(req,res) {
         await Comments.deleteMany({post_id:postId});
 
         return res.status(200).json({message:`Post deleted successfully`});
-        // return res.status(404).json({message:`Post can't be deleted now`});
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
+
+// @route: GET /api/posts/:post_id
+// @desc:  get a post by post_id
+// @access: public
 async function getPost(req,res) {
-    const postId = req.params.postId;
-    const post = await Posts.findOne({postId});
-    if(post)
-        res.status(200).json(post);
+    try {
+        const postId = req.params.postId;
+        const post = await Posts.findOne({postId});
+        if(post)
+            res.status(200).json(post);    
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error!!'}]});
+    }    
 }
 
+// @route: GET /api/posts/getposts
+// @desc:  gets the posts of all friends of a user
+// @access: private 
 async function getFriendsPosts(req,res){
-   
     try {
-        console.log("Friends posts");
         const userId = req.user.id;
 
         // gets the friends of given userId
         const user = await Users.findById(userId).select('friends');
         if(!user || user.friends.length == 0 ) return res.status(200).json({msg:'No friends yet'});
 
-        console.log(`\n user name : ${user.friends}\n`);
         // gets all posts of user.friends array
         const posts = await Posts.find({userId:{$in: [...user.friends,userId] }})
                     .populate({
@@ -151,6 +163,9 @@ async function getFriendsPosts(req,res){
 
 }
 
+// @route: PUT /api/posts/:post_id
+// @desc:  adding userIds to likes to a post 
+// @access: private 
 async function addLikes(req,res){
     try {
         const userId = req.user.id;
@@ -179,6 +194,9 @@ async function addLikes(req,res){
     }
 }
 
+// @route: PUT /api/posts/addcomment/:post_id
+// @desc:  adding a comment to the post
+// @access: private 
 async function addComment(req,res){
     try {
         const errors = validationResult(req);

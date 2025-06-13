@@ -1,6 +1,9 @@
 import Notifications from "../models/Notifications.mjs";
 import Users from "../models/Users.mjs";
 
+// @route: GET /api/notification
+// @desc:   updating the notifications , if it is read
+// @access: private 
 async function updateNotification(req,res){
     try {
         const userId = req.user.id;
@@ -14,24 +17,42 @@ async function updateNotification(req,res){
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
-async function addNotification(req,res){
-    
-    let newNotification = await Notifications.insertOne(req.body);
-    if(newNotification)
-        return res.status(201).json({message: `Successfully registered`});
-    return res.status(404).json({message: `Something went wrong . Please try later!!`});
+
+// @route: POST /api/notification
+// @desc:   add a notification based on used comment or post action
+async function addNotification(req,res){    
+    try {
+        let newNotification = await Notifications.insertOne(req.body);
+        if(newNotification)
+            return res.status(201).json({message: `Successfully registered`});
+        return res.status(404).json({message: `Something went wrong . Please try later!!`});    
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server Error!!'}]});
+    }    
 }
 
+// @route: DELETE /api/notification
+// @desc:   delete notification 
+// @access: private 
 async function deleteNotification(req,res) {
-    const userId = req.user.id;
-    const deletedNotification = await Notifications.deleteMany({userId:userId});
-    // TODO : all the friend connections should also be deleted
-    //  All the notifications,comments,posts,likes if any should also be deleted
-    if(deleteNotification)
-        return res.status(200).json({message:`Notification deleted successfully`});
-    return res.status(404).json({message:`Notification can't be deleted now`});
+    try {
+        const userId = req.user.id;
+        const deletedNotification = await Notifications.deleteMany({userId:userId});
+        // TODO : all the friend connections should also be deleted
+        //  All the notifications,comments,posts,likes if any should also be deleted
+        if(deletedNotification)
+            return res.status(200).json({message:`Notification deleted successfully`});
+        return res.status(404).json({message:`Notification can't be deleted now`});   
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({errors:[{msg:'Server error'}]});
+    }
 }
 
+// @route: GET /api/notification
+// @desc:  gets the notifications of a logged in user
+// @access: private 
 async function getNotification(req,res) {
     try {
         const userId = req.user.id;

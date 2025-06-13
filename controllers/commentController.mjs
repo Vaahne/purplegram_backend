@@ -4,14 +4,16 @@ import Posts from "../models/Posts.mjs";
 import Users from "../models/Users.mjs";
 import { validationResult } from "express-validator";
 
-// Used to update the comment on a post by a user
+// @route: PUT /api/comments/:id
+// @desc: update the comment on a post by a user
+// @access: public
 async function updateComment(req,res){
     try {
         const errors = validationResult(req);
             
         if(!errors.isEmpty())
             return res.status(400).json({errors: errors.array()});
-        console.log('before comment id')
+
         const comment_id = req.params.commentId;
         let comment = await Comments.findById({_id:comment_id});
         
@@ -28,7 +30,10 @@ async function updateComment(req,res){
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
 }
-// adding a new comment to the post and notifying the user who created the post
+
+// @route: POST /api/comments
+// @desc: adding a new comment to the post and notifying the user who created the post
+// @access: private
 async function addComment(req,res){   
     try {
         const errors = validationResult(req);
@@ -72,7 +77,9 @@ async function addComment(req,res){
     }
 }
 
-// delete the comment 
+// @route: DELETE /api/comments/:commentId
+// @desc:  delete the comment 
+// @access: private
 async function deleteComment(req,res) {    
     try {
         const errors = validationResult(req);
@@ -104,7 +111,9 @@ async function deleteComment(req,res) {
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
-// to get the comments of a post with comment text
+// @route: GET /api/comments/:postId
+// @desc: to get the comments of a post with comment text
+// @access: private
 async function getComment(req,res) {
     try {
         const userId = req.user.id;
@@ -134,7 +143,10 @@ async function getComment(req,res) {
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
 }
-// gets all the comment ids of a post
+
+// @route: GET /api/comments/:postId
+// @desc: gets all the comment ids of a post
+// @access: public
 async function getAllCommentsByPost(req,res) {
     try {
         const errors = validationResult(req);
