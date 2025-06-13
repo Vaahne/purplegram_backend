@@ -1,5 +1,5 @@
 export default function NotificationSocket(io,socket){
-
+  // emits/broadcasts when a new notification is added based on new comment or post
     socket.on("addNotification", ({ postId, userId, friends }) => {
     // Loop through each friend and emit only if they are online (i.e., joined their room)
     friends.forEach(friendId => {

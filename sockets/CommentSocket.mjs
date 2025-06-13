@@ -1,4 +1,5 @@
 export default function CommentSocket(io, socket) {
+  // emits / broadcasts when comment is created/edited or deleted
   socket.on("commentAction", ({ action, postId, comment, commentId, updatedComment }) => {
     switch (action) {
       case "create":

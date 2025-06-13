@@ -2,7 +2,7 @@ import jwt from  'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
+//  getting the x-auth-token from the frontend and authenticating the user
 export default function(req,res,next) {
     try {
         const token = req.header('x-auth-token');
