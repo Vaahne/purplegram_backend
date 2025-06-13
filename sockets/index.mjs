@@ -2,6 +2,7 @@ import LikeSocket from "./LikeSocket.mjs";
 import CommentSocket from "./CommentSocket.mjs";
 import PostSocket from "./PostSocket.mjs";
 import NotificationSocket from "./NotificationSocket.mjs";
+import FriendreqSocket from "./FriendReqSocket.mjs";
 
 export default function registerSocketHandlers(io){
   
@@ -18,7 +19,7 @@ export default function registerSocketHandlers(io){
     LikeSocket(io, socket);
     PostSocket(io,socket);
     NotificationSocket(io, socket);
-    // friendRequestSocket(io, socket);
+    FriendreqSocket(io, socket);
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);

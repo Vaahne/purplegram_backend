@@ -232,7 +232,7 @@ async function login(req,res) {
         jwt.sign(payload,
                 process.env.jwtSecret,
                 {
-                    expiresIn: 3600000
+                    expiresIn: 36000000
                 },
                 (err,token)=>{
                     if(err) throw err;
