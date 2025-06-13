@@ -5,7 +5,8 @@ export default function PostSocket(io,socket){
     });
 
     socket.on("postUpdated", ({ postId, updatedPost }) => {
-        setPosts(prev => prev.map(p => p._id === postId ? updatedPost : p));
+        io.emit("updated",postId);
+        // setPosts(prev => prev.map(p => p._id === postId ? updatedPost : p));
     });
 
 }

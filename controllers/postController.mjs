@@ -34,7 +34,7 @@ async function updatePost(req,res){
         Object.assign(post,updates);
         await post.save();
         
-        return res.status(200).json({message: `Post Successfully Updated!!!`});
+        return res.status(200).json(post);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Errror'}]});

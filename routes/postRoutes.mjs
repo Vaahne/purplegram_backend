@@ -15,7 +15,7 @@ router.route('/:postId').get(postController.getPost)
                        .put(auth,postController.updatePost);
 
 
-router.put('/:post_id',auth,postController.addLikes);
+router.put('/addlike/:post_id',auth,postController.addLikes);
 
 router.put('/addcomment/:post_id',auth,[check('comment','Comment cannot be empty').not().isEmpty()],postController.addComment);
 
