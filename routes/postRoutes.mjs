@@ -11,8 +11,8 @@ router.route('/').get((req,res)=>{res.send(`Hello from Posts Router`)})
 router.get('/getposts',auth,postController.getFriendsPosts);
 
 router.route('/:postId').get(postController.getPost)
-                       .delete(auth,postController.deletePost);
-                    //    .put(auth,postController.updatePost);
+                       .delete(auth,postController.deletePost)
+                       .put(auth,postController.updatePost);
 
 
 router.put('/:post_id',auth,postController.addLikes);

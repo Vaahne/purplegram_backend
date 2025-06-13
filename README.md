@@ -4,26 +4,25 @@ This repository focuses on the **Backend API** for Purplegram.
 
 ### 🔗 [Frontend Repository](https://github.com/Vaahne/purplegram_frontend)
 
-install mongoose, express, dotenv, cors , multer
 ---
 
 ## 🛠️ Tech Stack
 
-- **MongoDB** – NoSQL database
-- **Express.js** – Node.js web framework
-- **Mongoose** – ODM for MongoDB
-- **dotenv** – Environment variable management
-- **CORS** – Cross-Origin Resource Sharing
-- **Socket.io** - live updates
-- jwt authentication
-- hateoas
++ MongoDB – NoSQL database
++ Express.js – Node.js web framework
++ Mongoose – ODM for MongoDB
++ dotenv – Environment variable management
++ CORS – Cross-Origin Resource Sharing
++ Socket.io - Live updates for posts, comments, and friend requests
++ JWT Authentication – Secure API access
++ HATEOAS – Hypermedia-driven API responses
 
 ---
 
 ## 📦 Installation
 
 ```bash
-npm install express mongoose dotenv cors multer
+npm install express mongoose dotenv cors multer socket.io jsonwebtoken
 ```
 
 ---
@@ -38,35 +37,18 @@ npm install express mongoose dotenv cors multer
 
 ## Schema
 Users 
-<table>
-  <tr style="background-color:#f2f2f2">
-    <th>Feild Name</th>
-    <th>Type </th>
-    <th>Description</th>
-  </tr>
-  <tr style="background-color:#ffffff">
-    <td>_id</td>
-    <td>object uniquely </td>
-    <td>unique identifier</td>
-  </tr>
-  <tr style="background-color:#f2f2f2">
-    <td>Name</td>
-    <td>String</td>
-    <td>Name of the user</td>
-  </tr>
-  <tr style="background-color:#ffffff">
-    <td>Email</td>
-    <td>String</td>
-    <td>unique email id for each user</td>
-  </tr>
-  <tr style="background-color:#f2f2f2">
-    <td>Friends</td>
-    <td>user ids</td>
-    <td>Array of friend userids </td>
-  </tr>
-</table>
+<table> <tr style="background-color:#f2f2f2"> <th>Field Name</th> <th>Type</th> <th>Description</th> </tr> <tr> <td>_id</td> <td>ObjectId</td> <td>Unique identifier</td> </tr> <tr> <td>Name</td> <td>String</td> <td>Full name of the user</td> </tr> <tr> <td>Email</td> <td>String</td> <td>Unique email address</td> </tr> <tr> <td>Friends</td> <td>Array (ObjectId)</td> <td>List of friend user IDs</td> </tr> </table>
 ---
-    
+
+# Posts
+<table> <tr style="background-color:#f2f2f2"> <th>Field Name</th> <th>Type</th> <th>Description</th> </tr> <tr> <td>_id</td> <td>ObjectId</td> <td>Unique identifier</td> </tr> <tr> <td>userId</td> <td>ObjectId</td> <td>Reference to the user</td> </tr> <tr> <td>post_text</td> <td>String</td> <td>Content of the post</td> </tr> <tr> <td>post_photo</td> <td>String (URL)</td> <td>Image associated with the post</td> </tr> <tr> <td>likes</td> <td>Array (ObjectId)</td> <td>List of users who liked the post</td> </tr> </table>
+
+# Comments
+<table> <tr style="background-color:#f2f2f2"> <th>Field Name</th> <th>Type</th> <th>Description</th> </tr> <tr> <td>_id</td> <td>ObjectId</td> <td>Unique identifier</td> </tr> <tr> <td>postId</td> <td>ObjectId</td> <td>Reference to the post</td> </tr> <tr> <td>userId</td> <td>ObjectId</td> <td>Reference to the user</td> </tr> <tr> <td>comment_text</td> <td>String</td> <td>Content of the comment</td> </tr> </table>
+
+# Friend Requests
+<table> <tr style="background-color:#f2f2f2"> <th>Field Name</th> <th>Type</th> <th>Description</th> </tr> <tr> <td>_id</td> <td>ObjectId</td> <td>Unique identifier</td> </tr> <tr> <td>senderId</td> <td>ObjectId</td> <td>User who sent the request</td> </tr> <tr> <td>receiverId</td> <td>ObjectId</td> <td>User receiving the request</td> </tr> <tr> <td>status</td> <td>String</td> <td>Status: "Pending", "Accepted", "Rejected"</td> </tr> </table>
+
 # Routes
  | Feature                         | Method | Route                                  | Description                            |
 |---------------------------------|--------|----------------------------------------|----------------------------------------|
