@@ -50,12 +50,31 @@ async function updateUser(req,res){
         if(!user)
             return res.status(404).json({errors:[{msg: 'User doesnot exist'}]});
 
-        user.email = email;
-        user.dob = dob;
-        user.photo = photo;
-        user.name = name;
+        if(email !== user.email) {
+            const checkEmail = await Users.findOne({email:email});
+            if(checkEmail && checkEmail._id.toString() !== userId)
+                return res.status(400).json({errors:[{msg:'Email already exists!!'}]});
+            user.email = email;
+        }
     
-        await user.save();
+        await Users.findByIdAndUpdate(userId,
+                            {
+                                name,
+                                email,
+                                dob,
+                                photo
+                            },
+                            {
+                                new: true,
+                                runValidators: true,
+                            }
+                        );
+
+        // user.dob = dob;
+        // user.photo = photo;
+        // user.name = name;
+    
+        // await user.save();
 
       return res.status(200).json({message: `Updated User details Successfully!!!`});
 

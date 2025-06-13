@@ -15,6 +15,8 @@ install mongoose, express, dotenv, cors , multer
 - **dotenv** – Environment variable management
 - **CORS** – Cross-Origin Resource Sharing
 - **Socket.io** - live updates
+- jwt authentication
+- hateoas
 
 ---
 

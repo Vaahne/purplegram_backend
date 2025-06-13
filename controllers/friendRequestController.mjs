@@ -1,6 +1,8 @@
 import FriendRequest from "../models/FriendRequest.mjs";
 import Users from "../models/Users.mjs";
 
+// updating a freend request after accepting or ignoring the friend request
+// and adding to the friends list once accepted
 async function updateFriendReq(req,res){
     try {
         const userId = req.user.id;
@@ -41,6 +43,7 @@ async function updateFriendReq(req,res){
     }
 }
 
+// adding a new friend request
 async function addFriendReq(req,res){
     try {
         const userId = req.user.id;
@@ -59,7 +62,6 @@ async function addFriendReq(req,res){
                 {sender_id:receiverId, receiver_id: userId}
             ]            
         });
-        console.log("hello before if\n");
         if(friendRequest ){
             const status = friendRequest.status;
             if( status == 'Pending')
@@ -70,7 +72,6 @@ async function addFriendReq(req,res){
                 return res.staus(200).json({msg:'Friend Request sent!!'});
             }
         }
-
         const friend_req = new FriendRequest({
             sender_id: userId,
             receiver_id: receiverId
@@ -84,9 +85,8 @@ async function addFriendReq(req,res){
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
-
-async function deleteFriendReq(req,res) {
-    
+// deleting a friend request
+async function deleteFriendReq(req,res) {   
     try {
         const errors = validationResult(req);
         if(!errors.isEmpty())
@@ -103,15 +103,16 @@ async function deleteFriendReq(req,res) {
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
     
-    
     const friendReqId= req.params.friendReqId;
     const deletedFriendReq = await FriendRequest.findOneAndDelete(friendReqId);
     // TODO : all the friend connections should also be deleted
     //  All the notifications,comments,posts,likes if any should also be deleted
-    if(deleteFriendReq)
+    if(deletedFriendReq)
         return res.status(200).json({message:`FriendReq deleted successfully`});
     return res.status(404).json({message:`FriendReq can't be deleted now`});
 }
+
+// get all the friend requests of a user
 async function getFriendReq(req,res) {
     try {
         const userId = req.user.id;
@@ -139,19 +140,13 @@ async function getFriendReq(req,res) {
     if(friendReq)
         res.status(200).json(friendReq);
 }
-
+// This is for developer purpose : update a feild 
 async function updateFeild(req,res){
-    try {
-        // const result = await FriendRequest.updateMany({notification_type:{$exists : true}},
-        //                     {$rename: {notification_type:"status"}});
-
+    try {        
          const result = await FriendRequest.updateMany(
             { notification_type: { $exists: true } },  // Find documents with the field
             { $set: { status: "$notification_type" }, $unset: { notification_type: "" } } // Rename field properly
         );
-
-        console.log(result);
-        console.log(`${result.modifiedCount} updated!!`);
         res.json({msg:"updated"});
     } catch (err) {
         console.error(err.message);

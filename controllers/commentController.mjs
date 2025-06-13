@@ -4,6 +4,7 @@ import Posts from "../models/Posts.mjs";
 import Users from "../models/Users.mjs";
 import { validationResult } from "express-validator";
 
+// Used to update the comment on a post by a user
 async function updateComment(req,res){
     try {
         const errors = validationResult(req);
@@ -27,6 +28,7 @@ async function updateComment(req,res){
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
 }
+// adding a new comment to the post and notifying the user who created the post
 async function addComment(req,res){   
     try {
         const errors = validationResult(req);
@@ -70,8 +72,8 @@ async function addComment(req,res){
     }
 }
 
-async function deleteComment(req,res) {
-    
+// delete the comment 
+async function deleteComment(req,res) {    
     try {
         const errors = validationResult(req);
         
@@ -102,7 +104,7 @@ async function deleteComment(req,res) {
         res.status(500).json({errors:[{msg:'Server Error'}]});
     }
 }
-
+// to get the comments of a post with comment text
 async function getComment(req,res) {
     try {
         const userId = req.user.id;
@@ -119,30 +121,20 @@ async function getComment(req,res) {
         if(!post.comments || post.comments.length == 0)
             return res.status(200).json({comments:[]});
 
-    //    const populatedPost = await post.populate({
-    //                             path: 'comments',
-    //                             select: 'comment_text user_id',
-    //                             // populate: { path: 'user_id', select: 'name photo' }
-    //                         });
-
      const populatedPost = await Posts.findById(post_id)
                             .populate({
                                 path: 'comments',
                                 select: 'comment_text user_id',
                                 populate: { path: 'user_id', select: 'name photo' }
                             });
-    
-        // console.log('\n get comment after comment wihte post: \n ',populatedPost);
-        
-        // if(!commentsWithPost)    return res.status(404).json({errors:[{msg:'Post not found!!!'}]});
-        
+
         res.status(200).json(populatedPost);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({errors:[{msg:'Server Error!!'}]});
     }
 }
-
+// gets all the comment ids of a post
 async function getAllCommentsByPost(req,res) {
     try {
         const errors = validationResult(req);
